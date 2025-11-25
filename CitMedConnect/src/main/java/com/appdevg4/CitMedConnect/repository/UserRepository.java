@@ -1,6 +1,6 @@
-package com.appdevg5.CitMedConnect.repository;
+package com.appdevg4.CitMedConnect.repository;
 
-import com.appdevg5.CitMedConnect.entity.UserEntity;
+import com.appdevg4.CitMedConnect.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

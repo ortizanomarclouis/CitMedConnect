@@ -1,7 +1,7 @@
-package com.appdevg5.CitMedConnect.service;
+package com.appdevg4.CitMedConnect.service;
 
-import com.appdevg5.CitMedConnect.entity.AuditLog;
-import com.appdevg5.CitMedConnect.repository.AuditLogRepository;
+import com.appdevg4.CitMedConnect.entity.AuditLog;
+import com.appdevg4.CitMedConnect.repository.AuditLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;

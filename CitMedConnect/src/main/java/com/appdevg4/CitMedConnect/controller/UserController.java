@@ -1,7 +1,7 @@
-package com.appdevg5.CitMedConnect.controller;
+package com.appdevg4.CitMedConnect.controller;
 
-import com.appdevg5.CitMedConnect.entity.UserEntity;
-import com.appdevg5.CitMedConnect.service.UserService;
+import com.appdevg4.CitMedConnect.entity.UserEntity;
+import com.appdevg4.CitMedConnect.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

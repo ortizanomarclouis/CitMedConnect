@@ -1,7 +1,7 @@
-package com.appdevg5.CitMedConnect.controller;
+package com.appdevg4.CitMedConnect.controller;
 
-import com.appdevg5.CitMedConnect.entity.AuditLog;
-import com.appdevg5.CitMedConnect.service.AuditLogService;
+import com.appdevg4.CitMedConnect.entity.AuditLog;
+import com.appdevg4.CitMedConnect.service.AuditLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

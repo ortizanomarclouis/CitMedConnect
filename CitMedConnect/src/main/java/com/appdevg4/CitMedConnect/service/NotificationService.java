@@ -1,4 +1,4 @@
-package com.appdevg5.CitMedConnect.service;
+package com.appdevg4.CitMedConnect.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.appdevg5.CitMedConnect.entity.NotificationEntity;
-import com.appdevg5.CitMedConnect.repository.NotificationRepository;
-import com.appdevg5.CitMedConnect.repository.UserRepository;
+import com.appdevg4.CitMedConnect.entity.NotificationEntity;
+import com.appdevg4.CitMedConnect.repository.NotificationRepository;
+import com.appdevg4.CitMedConnect.repository.UserRepository;
 
 
 @Service

@@ -1,4 +1,4 @@
-package com.appdevg5.CitMedConnect.service;
+package com.appdevg4.CitMedConnect.service;
 
 
 import java.util.HashMap;
@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.appdevg5.CitMedConnect.entity.UserEntity;
-import com.appdevg5.CitMedConnect.repository.UserRepository;
+import com.appdevg4.CitMedConnect.entity.UserEntity;
+import com.appdevg4.CitMedConnect.repository.UserRepository;
 
 @Service
 public class UserService {

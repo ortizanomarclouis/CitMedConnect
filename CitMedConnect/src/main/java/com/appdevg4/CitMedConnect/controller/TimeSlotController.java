@@ -1,7 +1,7 @@
-package com.appdevg5.CitMedConnect.controller;
+package com.appdevg4.CitMedConnect.controller;
 
-import com.appdevg5.CitMedConnect.entity.TimeSlot;
-import com.appdevg5.CitMedConnect.service.TimeSlotService;
+import com.appdevg4.CitMedConnect.entity.TimeSlot;
+import com.appdevg4.CitMedConnect.service.TimeSlotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

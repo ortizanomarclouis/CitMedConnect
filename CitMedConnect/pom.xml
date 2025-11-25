@@ -8,7 +8,7 @@
 		<version>4.0.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.appdevg5</groupId>
+	<groupId>com.appdevg4</groupId>
 	<artifactId>CitMedConnect</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>CitMedConnect</name>

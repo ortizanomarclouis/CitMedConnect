@@ -1,7 +1,7 @@
-package com.appdevg5.CitMedConnect.service;
+package com.appdevg4.CitMedConnect.service;
 
-import com.appdevg5.CitMedConnect.entity.TimeSlot;
-import com.appdevg5.CitMedConnect.repository.TimeSlotRepository;
+import com.appdevg4.CitMedConnect.entity.TimeSlot;
+import com.appdevg4.CitMedConnect.repository.TimeSlotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
