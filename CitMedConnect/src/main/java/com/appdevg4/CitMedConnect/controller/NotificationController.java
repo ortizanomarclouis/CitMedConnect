@@ -1,7 +1,7 @@
-package com.appdevg5.CitMedConnect.controller;
+package com.appdevg4.CitMedConnect.controller;
 
-import com.appdevg5.CitMedConnect.entity.NotificationEntity;
-import com.appdevg5.CitMedConnect.service.NotificationService;
+import com.appdevg4.CitMedConnect.entity.NotificationEntity;
+import com.appdevg4.CitMedConnect.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.appdevg5.CitMedConnect.entity;
+package com.appdevg4.CitMedConnect.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
