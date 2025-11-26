@@ -32,7 +32,7 @@ public class NotificationService {
         
         // Verify the user exist using school_id
         String schoolId = notification.getSchool_Id();
-        userRepository.findById(Integer.parseInt(schoolId))
+        userRepository.findById(schoolId)
             .orElseThrow(() -> new RuntimeException("User not found with school_id: " + schoolId));
         
         // Set the verified user and timestamp
@@ -72,7 +72,7 @@ public class NotificationService {
         
         if (notification.getSchool_Id() != null && !notification.getSchool_Id().isEmpty()) {
             String schoolId = notification.getSchool_Id();
-            userRepository.findById(Integer.parseInt(schoolId))
+            userRepository.findById(schoolId)
                 .orElseThrow(() -> new RuntimeException("User not found with school_id: " + schoolId));
             existing.setSchool_Id(schoolId);
         }

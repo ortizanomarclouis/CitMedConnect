@@ -1,8 +1,10 @@
 package com.appdevg4.CitMedConnect.service;
 
+import com.appdevg4.CitMedConnect.dto.MedicalRecordDTO;
 import com.appdevg4.CitMedConnect.entity.MedicalRecordEntity;
 import com.appdevg4.CitMedConnect.entity.UserEntity;
 import com.appdevg4.CitMedConnect.entity.AppointmentEntity;
+import com.appdevg4.CitMedConnect.mapper.MedicalRecordMapper;
 import com.appdevg4.CitMedConnect.repository.MedicalRecordRepository;
 import com.appdevg4.CitMedConnect.repository.UserRepository;
 import com.appdevg4.CitMedConnect.repository.AppointmentRepository;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class MedicalRecordService {
@@ -27,122 +30,110 @@ public class MedicalRecordService {
     @Autowired
     private AppointmentRepository appointmentRepository;
     
+    @Autowired
+    private MedicalRecordMapper mapper;
+    
     // Create medical record
-    public MedicalRecordEntity createMedicalRecord(MedicalRecordEntity medicalRecord) {
-        // Validate user exists
-        if (medicalRecord.getUser() != null) {
-            UserEntity user = userRepository.findById(medicalRecord.getUser().getSchool_Id()).orElse(null);
-            if (user == null) {
-                throw new RuntimeException("User not found");
-            }
-            medicalRecord.setUser(user);
+    public MedicalRecordDTO createMedicalRecord(MedicalRecordDTO dto) {
+        // Convert DTO to Entity
+        MedicalRecordEntity entity = mapper.toEntity(dto);
+        
+        // Validate and set user
+        if (dto.getUserId() != null) {
+            UserEntity user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + dto.getUserId()));
+            entity.setUser(user);
         }
         
-        // Validate appointment exists if provided
-        if (medicalRecord.getAppointment() != null && medicalRecord.getAppointment().getAppointmentId() != null) {
-            AppointmentEntity appointment = appointmentRepository.findById(medicalRecord.getAppointment().getAppointmentId()).orElse(null);
-            if (appointment == null) {
-                throw new RuntimeException("Appointment not found");
-            }
-            medicalRecord.setAppointment(appointment);
+        // Validate and set appointment if provided
+        if (dto.getAppointmentId() != null) {
+            AppointmentEntity appointment = appointmentRepository.findById(dto.getAppointmentId())
+                .orElseThrow(() -> new RuntimeException("Appointment not found with ID: " + dto.getAppointmentId()));
+            entity.setAppointment(appointment);
             
-            // Optionally mark appointment as completed
+            // Mark appointment as completed
             if (!"COMPLETED".equals(appointment.getStatus())) {
                 appointment.setStatus("COMPLETED");
                 appointmentRepository.save(appointment);
             }
         }
         
-        medicalRecord.setCreatedAt(LocalDateTime.now());
-        medicalRecord.setUpdatedAt(LocalDateTime.now());
-        if (medicalRecord.getRecordDate() == null) {
-            medicalRecord.setRecordDate(LocalDateTime.now());
+        entity.setCreatedAt(LocalDateTime.now());
+        entity.setUpdatedAt(LocalDateTime.now());
+        if (entity.getRecordDate() == null) {
+            entity.setRecordDate(LocalDateTime.now());
         }
         
-        return medicalRecordRepository.save(medicalRecord);
+        MedicalRecordEntity savedEntity = medicalRecordRepository.save(entity);
+        return mapper.toDTO(savedEntity);
     }
     
     // Get all medical records
-    public List<MedicalRecordEntity> getAllMedicalRecords() {
-        return medicalRecordRepository.findAll();
+    public List<MedicalRecordDTO> getAllMedicalRecords() {
+        return medicalRecordRepository.findAll().stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
     }
     
     // Get medical record by ID
-    public MedicalRecordEntity getMedicalRecordById(Long id) {
-        return medicalRecordRepository.findById(id).orElse(null);
+    public MedicalRecordDTO getMedicalRecordById(Long id) {
+        MedicalRecordEntity entity = medicalRecordRepository.findById(id).orElse(null);
+        return mapper.toDTO(entity);
     }
     
     // Get medical records by user ID
-    public List<MedicalRecordEntity> getMedicalRecordsByUserId(String userId) {
-        return medicalRecordRepository.findByUser_SchoolId(userId);
+    public List<MedicalRecordDTO> getMedicalRecordsByUserId(String userId) {
+        return medicalRecordRepository.findByUser_SchoolId(userId).stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
     }
     
-    // Get medical records by user ID ordered by date
-    public List<MedicalRecordEntity> getMedicalRecordsByUserIdSorted(String userId) {
-        return medicalRecordRepository.findByUser_SchoolIdOrderByRecordDateDesc(userId);
+    // Get medical records by user ID sorted by date
+    public List<MedicalRecordDTO> getMedicalRecordsByUserIdSorted(String userId) {
+        return medicalRecordRepository.findByUser_SchoolIdOrderByRecordDateDesc(userId).stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
     }
     
     // Get medical record by appointment ID
-    public MedicalRecordEntity getMedicalRecordByAppointmentId(Long appointmentId) {
-        return medicalRecordRepository.findByAppointment_AppointmentId(appointmentId);
+    public MedicalRecordDTO getMedicalRecordByAppointmentId(Long appointmentId) {
+        MedicalRecordEntity entity = medicalRecordRepository.findByAppointment_AppointmentId(appointmentId);
+        return mapper.toDTO(entity);
     }
     
     // Get medical records by date range
-    public List<MedicalRecordEntity> getMedicalRecordsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        return medicalRecordRepository.findByRecordDateBetween(startDate, endDate);
+    public List<MedicalRecordDTO> getMedicalRecordsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return medicalRecordRepository.findByRecordDateBetween(startDate, endDate).stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
     }
     
     // Get medical records by user and date range
-    public List<MedicalRecordEntity> getMedicalRecordsByUserAndDateRange(String userId, LocalDateTime startDate, LocalDateTime endDate) {
-        UserEntity user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
-        return medicalRecordRepository.findByUserAndRecordDateBetween(user, startDate, endDate);
+    public List<MedicalRecordDTO> getMedicalRecordsByUserAndDateRange(String userId, LocalDateTime startDate, LocalDateTime endDate) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+        return medicalRecordRepository.findByUserAndRecordDateBetween(user, startDate, endDate).stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
     }
     
     // Get medical records by created by
-    public List<MedicalRecordEntity> getMedicalRecordsByCreatedBy(String createdBy) {
-        return medicalRecordRepository.findByCreatedBy(createdBy);
+    public List<MedicalRecordDTO> getMedicalRecordsByCreatedBy(String createdBy) {
+        return medicalRecordRepository.findByCreatedBy(createdBy).stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
     }
     
     // Update medical record
-    public MedicalRecordEntity updateMedicalRecord(Long id, MedicalRecordEntity recordDetails) {
-        return medicalRecordRepository.findById(id).map(existingRecord -> {
-            if (recordDetails.getDiagnosis() != null) {
-                existingRecord.setDiagnosis(recordDetails.getDiagnosis());
-            }
-            if (recordDetails.getSymptoms() != null) {
-                existingRecord.setSymptoms(recordDetails.getSymptoms());
-            }
-            if (recordDetails.getTreatment() != null) {
-                existingRecord.setTreatment(recordDetails.getTreatment());
-            }
-            if (recordDetails.getPrescription() != null) {
-                existingRecord.setPrescription(recordDetails.getPrescription());
-            }
-            if (recordDetails.getVitalSigns() != null) {
-                existingRecord.setVitalSigns(recordDetails.getVitalSigns());
-            }
-            if (recordDetails.getAllergies() != null) {
-                existingRecord.setAllergies(recordDetails.getAllergies());
-            }
-            if (recordDetails.getMedicalHistory() != null) {
-                existingRecord.setMedicalHistory(recordDetails.getMedicalHistory());
-            }
-            if (recordDetails.getNotes() != null) {
-                existingRecord.setNotes(recordDetails.getNotes());
-            }
-            if (recordDetails.getRecordDate() != null) {
-                existingRecord.setRecordDate(recordDetails.getRecordDate());
-            }
-            if (recordDetails.getCreatedBy() != null) {
-                existingRecord.setCreatedBy(recordDetails.getCreatedBy());
-            }
-            
-            existingRecord.setUpdatedAt(LocalDateTime.now());
-            return medicalRecordRepository.save(existingRecord);
-        }).orElse(null);
+    public MedicalRecordDTO updateMedicalRecord(Long id, MedicalRecordDTO dto) {
+        MedicalRecordEntity existingEntity = medicalRecordRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Medical record not found with ID: " + id));
+        
+        mapper.updateEntityFromDTO(dto, existingEntity);
+        existingEntity.setUpdatedAt(LocalDateTime.now());
+        
+        MedicalRecordEntity updatedEntity = medicalRecordRepository.save(existingEntity);
+        return mapper.toDTO(updatedEntity);
     }
     
     // Delete medical record

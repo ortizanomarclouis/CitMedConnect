@@ -1,15 +1,17 @@
 package com.appdevg4.CitMedConnect.service;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.appdevg4.CitMedConnect.dto.UserDTO;
 import com.appdevg4.CitMedConnect.entity.UserEntity;
+import com.appdevg4.CitMedConnect.mapper.UserMapper;
 import com.appdevg4.CitMedConnect.repository.UserRepository;
 
 @Service
@@ -18,41 +20,51 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
     
+    @Autowired
+    private UserMapper mapper;
+    
     // Create 
-    public UserEntity createUser(UserEntity user) {
-        return userRepository.save(user);
+    public UserDTO createUser(UserDTO userDTO) {
+        // Check if email already exists
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new RuntimeException("Email already exists: " + userDTO.getEmail());
+        }
+        
+        UserEntity entity = mapper.toEntity(userDTO);
+        // Note: Password should be hashed before saving
+        // entity.setPassword(passwordEncoder.encode(password));
+        
+        UserEntity savedEntity = userRepository.save(entity);
+        return mapper.toDTO(savedEntity);
     }
     
     // Read All
-    public List<UserEntity> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
     }
     
     // Read By ID
-    public UserEntity getUserById(String id) {
-        return userRepository.findById(Integer.parseInt(id)).orElse(null);
+    public UserDTO getUserById(String id) {
+        UserEntity entity = userRepository.findById(id).orElse(null);
+        return mapper.toDTO(entity);
     }
     
     // Update 
-    public UserEntity updateUser(String id, UserEntity user) {
-        return userRepository.findById(Integer.parseInt(id)).map(existingUser -> {
-            // Update only the fields that should be updated
-            if (user.getEmail() != null) existingUser.setEmail(user.getEmail());
-            if (user.getPassword() != null) existingUser.setPassword(user.getPassword());
-            if (user.getFirst_Name() != null) existingUser.setFirst_Name(user.getFirst_Name());
-            if (user.getLast_Name() != null) existingUser.setLast_Name(user.getLast_Name());
-            if (user.getPhone() != null) existingUser.setPhone(user.getPhone());
-            if (user.getRole() != null) existingUser.setRole(user.getRole());
-            if (user.getGender() != null) existingUser.setGender(user.getGender());
-            if (user.getAge() > 0) existingUser.setAge(user.getAge());
-            
-            return userRepository.save(existingUser);
-        }).orElse(null);
+    public UserDTO updateUser(String id, UserDTO userDTO) {
+        UserEntity existingEntity = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
+        
+        mapper.updateEntityFromDTO(userDTO, existingEntity);
+        UserEntity updatedEntity = userRepository.save(existingEntity);
+        
+        return mapper.toDTO(updatedEntity);
     }
     
     // Delete 
     public ResponseEntity<Map<String, Boolean>> deleteUser(String id) {
-        return userRepository.findById(Integer.parseInt(id)).map(user -> {
+        return userRepository.findById(id).map(user -> {
             userRepository.delete(user);
             Map<String, Boolean> response = new HashMap<>();
             response.put("deleted", Boolean.TRUE);
@@ -61,8 +73,9 @@ public class UserService {
     }
     
     // Get user by email
-    public UserEntity getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public UserDTO getUserByEmail(String email) {
+        UserEntity entity = userRepository.findByEmail(email);
+        return mapper.toDTO(entity);
     }
     
     // Additional methods
@@ -70,7 +83,8 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
     
-    public UserEntity findByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public UserDTO findByEmail(String email) {
+        UserEntity entity = userRepository.findByEmail(email);
+        return mapper.toDTO(entity);
     }
 }
