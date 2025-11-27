@@ -11,6 +11,7 @@ public class AuditLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long logId;
 
+    @Column(name = "school_id")
     private String schoolId;
     private String actionType;
     private String tableName;
@@ -21,7 +22,7 @@ public class AuditLog {
 
     public AuditLog() {}
 
- 
+
     public Long getLogId() { return logId; }
     public void setLogId(Long logId) { this.logId = logId; }
 

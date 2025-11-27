@@ -56,7 +56,6 @@ public class MedicalRecordEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
     
-    // Constructors
     public MedicalRecordEntity() {}
     
     public MedicalRecordEntity(UserEntity user, String diagnosis, String symptoms, String treatment) {
@@ -66,7 +65,6 @@ public class MedicalRecordEntity {
         this.treatment = treatment;
     }
     
-    // Getters and Setters
     public Long getRecordId() {
         return recordId;
     }

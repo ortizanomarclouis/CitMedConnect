@@ -5,24 +5,21 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "School_Id")
-    private String School_Id;
+    private String schoolId;
     
     @Column(name = "First_Name", nullable = false)
-    private String First_Name;
+    private String firstName;
     
     @Column(name = "Last_Name", nullable = false)
-    private String Last_Name;
+    private String lastName;
     
     @Column(nullable = false, unique = true)
     private String email;
@@ -43,34 +40,34 @@ public class UserEntity {
     private int age;
     
     @Column(name = "Created_At", nullable = false, updatable = false)
-    private Date Created_At = new Date();
+    private Date createdAt = new Date();
     
-    public String getSchool_Id() {
-        return School_Id;
+    public String getSchoolId() {
+        return schoolId;
     }
     
-    public void setSchool_Id(String School_Id) {
-        this.School_Id = School_Id;
+    public void setSchoolId(String schoolId) {
+        this.schoolId = schoolId;
     }
     
     public String getUserId() {
-        return this.School_Id;
+        return this.schoolId;
     }
     
-    public String getFirst_Name() {
-        return First_Name;
+    public String getFirstName() {
+        return firstName;
     }
     
-    public void setFirst_Name(String First_Name) {
-        this.First_Name = First_Name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
     
-    public String getLast_Name() {
-        return Last_Name;
+    public String getLastName() {
+        return lastName;
     }
     
-    public void setLast_Name(String Last_Name) {
-        this.Last_Name = Last_Name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
     
     public String getEmail() {
@@ -121,11 +118,11 @@ public class UserEntity {
         this.age = age;
     }
     
-    public Date getCreated_At() {
-        return Created_At;
+    public Date getCreatedAt() {
+        return createdAt;
     }
     
-    public void setCreated_At(Date Created_At) {
-        this.Created_At = Created_At;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }

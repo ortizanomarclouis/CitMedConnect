@@ -14,6 +14,7 @@ public class UserDTO {
     private String role;
     private String gender;
     private int age;
+    private String password;
     private Date createdAt;
     
 
@@ -90,6 +91,14 @@ public class UserDTO {
     
     public void setAge(int age) {
         this.age = age;
+    }
+    
+    public String getPassword() {
+        return password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
     }
     
     public Date getCreatedAt() {

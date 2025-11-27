@@ -17,8 +17,8 @@ public class MedicalRecordMapper {
         dto.setRecordId(entity.getRecordId());
         
         if (entity.getUser() != null) {
-            dto.setUserId(entity.getUser().getSchool_Id());
-            dto.setUserName(entity.getUser().getFirst_Name() + " " + entity.getUser().getLast_Name());
+            dto.setUserId(entity.getUser().getSchoolId());
+            dto.setUserName(entity.getUser().getFirstName() + " " + entity.getUser().getLastName());
         }
         
         if (entity.getAppointment() != null) {

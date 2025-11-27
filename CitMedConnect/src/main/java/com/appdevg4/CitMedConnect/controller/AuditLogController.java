@@ -14,19 +14,16 @@ public class AuditLogController {
     @Autowired
     private AuditLogService auditLogService;
 
-    // Create
     @PostMapping
     public AuditLog createLog(@RequestBody AuditLog auditLog) {
         return auditLogService.createLog(auditLog);
     }
 
-    // Read All
     @GetMapping
     public List<AuditLog> getAllLogs() {
         return auditLogService.getAllLogs();
     }
 
-    // Read by ID
     @GetMapping("/{logId}")
     public ResponseEntity<AuditLog> getLogById(@PathVariable Long logId) {
         AuditLog log = auditLogService.getLogById(logId);
@@ -37,7 +34,6 @@ public class AuditLogController {
         return ResponseEntity.notFound().build();
     }
 
-    // Update
     @PutMapping("/{logId}")
     public ResponseEntity<AuditLog> updateLog(@PathVariable Long logId, @RequestBody AuditLog auditLog) {
         AuditLog updated = auditLogService.updateLog(logId, auditLog);
@@ -48,7 +44,6 @@ public class AuditLogController {
         return ResponseEntity.notFound().build();
     }
 
-    // Delete
     @DeleteMapping("/{logId}")
     public ResponseEntity<Void> deleteLog(@PathVariable Long logId) {
         if (auditLogService.deleteLog(logId)) {

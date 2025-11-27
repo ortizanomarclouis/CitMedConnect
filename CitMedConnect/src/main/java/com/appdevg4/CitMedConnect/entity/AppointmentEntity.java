@@ -21,7 +21,7 @@ public class AppointmentEntity {
     private TimeSlot timeSlot;
     
     @Column(nullable = false)
-    private String status; // PENDING, CONFIRMED, CANCELLED, COMPLETED
+    private String status; 
     
     @Column(name = "reason", columnDefinition = "TEXT")
     private String reason;
@@ -35,7 +35,6 @@ public class AppointmentEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
     
-    // Constructors
     public AppointmentEntity() {}
     
     public AppointmentEntity(UserEntity user, TimeSlot timeSlot, String status, String reason) {
@@ -44,8 +43,7 @@ public class AppointmentEntity {
         this.status = status;
         this.reason = reason;
     }
-    
-    // Getters and Setters
+
     public Long getAppointmentId() {
         return appointmentId;
     }

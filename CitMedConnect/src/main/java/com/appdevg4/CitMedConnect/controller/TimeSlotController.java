@@ -14,19 +14,16 @@ public class TimeSlotController {
     @Autowired
     private TimeSlotService timeSlotService;
 
-    // Create
     @PostMapping
     public TimeSlot createSlot(@RequestBody TimeSlot slot) {
         return timeSlotService.createSlot(slot);
     }
 
-    // Read All
     @GetMapping
     public List<TimeSlot> getAllSlots() {
         return timeSlotService.getAllSlots();
     }
 
-    // Read by ID
     @GetMapping("/{timeSlotId}")
     public ResponseEntity<TimeSlot> getSlotById(@PathVariable Long timeSlotId) {
         TimeSlot slot = timeSlotService.getSlotById(timeSlotId);
@@ -37,7 +34,6 @@ public class TimeSlotController {
         return ResponseEntity.notFound().build();
     }
 
-    // Update
     @PutMapping("/{timeSlotId}")
     public ResponseEntity<TimeSlot> updateSlot(@PathVariable Long timeSlotId, @RequestBody TimeSlot slot) {
         TimeSlot updated = timeSlotService.updateSlot(timeSlotId, slot);
@@ -48,7 +44,6 @@ public class TimeSlotController {
         return ResponseEntity.notFound().build();
     }
 
-    // Delete
     @DeleteMapping("/{timeSlotId}")
     public ResponseEntity<Void> deleteSlot(@PathVariable Long timeSlotId) {
         if (timeSlotService.deleteSlot(timeSlotId)) {
