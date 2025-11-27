@@ -20,7 +20,6 @@ public class MedicalRecordController {
     @Autowired
     private MedicalRecordService medicalRecordService;
     
-    // Create new medical record
     @PostMapping("/")
     public ResponseEntity<MedicalRecordDTO> createMedicalRecord(@RequestBody MedicalRecordDTO medicalRecordDTO) {
         try {
@@ -31,14 +30,12 @@ public class MedicalRecordController {
         }
     }
     
-    // Get all medical records
     @GetMapping("/")
     public ResponseEntity<List<MedicalRecordDTO>> getAllMedicalRecords() {
         List<MedicalRecordDTO> records = medicalRecordService.getAllMedicalRecords();
         return ResponseEntity.ok(records);
     }
     
-    // Get medical record by ID
     @GetMapping("/{id}")
     public ResponseEntity<MedicalRecordDTO> getMedicalRecordById(@PathVariable Long id) {
         MedicalRecordDTO record = medicalRecordService.getMedicalRecordById(id);
@@ -48,21 +45,18 @@ public class MedicalRecordController {
         return ResponseEntity.notFound().build();
     }
     
-    // Get medical records by user ID
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<MedicalRecordDTO>> getMedicalRecordsByUserId(@PathVariable String userId) {
         List<MedicalRecordDTO> records = medicalRecordService.getMedicalRecordsByUserId(userId);
         return ResponseEntity.ok(records);
     }
     
-    // Get medical records by user ID sorted by date
     @GetMapping("/user/{userId}/sorted")
     public ResponseEntity<List<MedicalRecordDTO>> getMedicalRecordsByUserIdSorted(@PathVariable String userId) {
         List<MedicalRecordDTO> records = medicalRecordService.getMedicalRecordsByUserIdSorted(userId);
         return ResponseEntity.ok(records);
     }
     
-    // Get medical record by appointment ID
     @GetMapping("/appointment/{appointmentId}")
     public ResponseEntity<MedicalRecordDTO> getMedicalRecordByAppointmentId(@PathVariable Long appointmentId) {
         MedicalRecordDTO record = medicalRecordService.getMedicalRecordByAppointmentId(appointmentId);
@@ -72,7 +66,6 @@ public class MedicalRecordController {
         return ResponseEntity.notFound().build();
     }
     
-    // Get medical records by date range
     @GetMapping("/date-range")
     public ResponseEntity<List<MedicalRecordDTO>> getMedicalRecordsByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
@@ -81,7 +74,6 @@ public class MedicalRecordController {
         return ResponseEntity.ok(records);
     }
     
-    // Get medical records by user and date range
     @GetMapping("/user/{userId}/date-range")
     public ResponseEntity<List<MedicalRecordDTO>> getMedicalRecordsByUserAndDateRange(
             @PathVariable String userId,
@@ -95,14 +87,12 @@ public class MedicalRecordController {
         }
     }
     
-    // Get medical records by created by
     @GetMapping("/created-by/{createdBy}")
     public ResponseEntity<List<MedicalRecordDTO>> getMedicalRecordsByCreatedBy(@PathVariable String createdBy) {
         List<MedicalRecordDTO> records = medicalRecordService.getMedicalRecordsByCreatedBy(createdBy);
         return ResponseEntity.ok(records);
     }
-    
-    // Update medical record
+
     @PutMapping("/{id}")
     public ResponseEntity<MedicalRecordDTO> updateMedicalRecord(
             @PathVariable Long id, 
@@ -115,13 +105,11 @@ public class MedicalRecordController {
         }
     }
     
-    // Delete medical record
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteMedicalRecord(@PathVariable Long id) {
         return medicalRecordService.deleteMedicalRecord(id);
     }
     
-    // Get count of records by user
     @GetMapping("/user/{userId}/count")
     public ResponseEntity<Long> getRecordCountByUserId(@PathVariable String userId) {
         long count = medicalRecordService.getRecordCountByUserId(userId);

@@ -4,68 +4,65 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "notifications")
+@Table(name = "notification")
 public class NotificationEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Notification_Id")
-    private String Notification_Id;
+    private String notificationId;
     
     @Column(name = "School_Id", nullable = false)
-    private String School_Id;
+    private String schoolId;
     
     @Column(nullable = false)
-    private String Title;
+    private String title;
     
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String Message;
+    private String message;
     
     @Column(name = "Created_At", nullable = false, updatable = false)
-    private LocalDateTime Created_At = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
     
-    public String getNotification_Id() {
-        return Notification_Id;
+    public String getNotificationId() {
+        return notificationId;
     }
     
-    public void setNotification_Id(String Notification_Id) {
-        this.Notification_Id = Notification_Id;
+    public void setNotificationId(String notificationId) {
+        this.notificationId = notificationId;
     }
     
-    public String getSchool_Id() {
-        return School_Id;
+    public String getSchoolId() {
+        return schoolId;
     }
     
-    public void setSchool_Id(String School_Id) {
-        this.School_Id = School_Id;
+    public void setSchoolId(String schoolId) {
+        this.schoolId = schoolId;
     }
     
     public String getTitle() {
-        return Title;
+        return title;
     }
     
-    public void setTitle(String Title) {
-        this.Title = Title;
+    public void setTitle(String title) {
+        this.title = title;
     }
     
     public String getMessage() {
-        return Message;
+        return message;
     }
     
-    public void setMessage(String Message) {
-        this.Message = Message;
+    public void setMessage(String message) {
+        this.message = message;
     }
     
-    public LocalDateTime getCreated_At() {
-        return Created_At;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
     
-    public void setCreated_At(LocalDateTime Created_At) {
-        this.Created_At = Created_At;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

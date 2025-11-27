@@ -12,22 +12,18 @@ public class AuditLogService {
     @Autowired
     private AuditLogRepository auditLogRepository;
 
-    // Create
     public AuditLog createLog(AuditLog auditLog) {
         return auditLogRepository.save(auditLog);
     }
 
-    // Read All
     public List<AuditLog> getAllLogs() {
         return auditLogRepository.findAll();
     }
 
-    // Read by ID
     public AuditLog getLogById(Long id) {
         return auditLogRepository.findById(id).orElse(null);
     }
 
-    // Update
     public AuditLog updateLog(Long id, AuditLog auditLog) {
         AuditLog existing = auditLogRepository.findById(id).orElse(null);
         
@@ -43,7 +39,6 @@ public class AuditLogService {
         
         return null;
     }
-
 
     public boolean deleteLog(Long id) {
         if (auditLogRepository.existsById(id)) {

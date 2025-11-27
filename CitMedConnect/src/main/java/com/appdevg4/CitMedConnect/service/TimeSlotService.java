@@ -12,22 +12,18 @@ public class TimeSlotService {
     @Autowired
     private TimeSlotRepository timeSlotRepository;
 
-    // Create
     public TimeSlot createSlot(TimeSlot slot) {
         return timeSlotRepository.save(slot);
     }
 
-    // Read All
     public List<TimeSlot> getAllSlots() {
         return timeSlotRepository.findAll();
     }
 
-    // Read by ID
     public TimeSlot getSlotById(Long id) {
         return timeSlotRepository.findById(id).orElse(null);
     }
 
-    // Update
     public TimeSlot updateSlot(Long id, TimeSlot slot) {
         TimeSlot existing = timeSlotRepository.findById(id).orElse(null);
         
@@ -44,7 +40,6 @@ public class TimeSlotService {
         return null;
     }
 
-    // Delete
     public boolean deleteSlot(Long id) {
         if (timeSlotRepository.existsById(id)) {
             timeSlotRepository.deleteById(id);

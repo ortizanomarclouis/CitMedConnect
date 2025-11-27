@@ -20,45 +20,38 @@ public class NotificationService {
     @Autowired
     private UserRepository userRepository;
     
-    // Create 
     public NotificationEntity createNotification(NotificationEntity notification) {
         if (notification == null) {
             throw new IllegalArgumentException("Notification data cannot be null");
         }
         
-        if (notification.getSchool_Id() == null || notification.getSchool_Id().isEmpty()) {
-            throw new IllegalArgumentException("User information is required");
+        if (notification.getSchoolId() == null || notification.getSchoolId().isEmpty()) {
+            throw new IllegalArgumentException("School ID cannot be null or empty");
         }
         
-        // Verify the user exist using school_id
-        String schoolId = notification.getSchool_Id();
+        String schoolId = notification.getSchoolId();
         userRepository.findById(schoolId)
             .orElseThrow(() -> new RuntimeException("User not found with school_id: " + schoolId));
         
-        // Set the verified user and timestamp
-        notification.setSchool_Id(schoolId);
-        notification.setCreated_At(LocalDateTime.now());
+        notification.setSchoolId(schoolId);
+        notification.setCreatedAt(LocalDateTime.now());
         
         return notificationRepository.save(notification);
     }
     
-    // Read All
     public List<NotificationEntity> getAllNotifications() {
         return notificationRepository.findAll();
     }
     
-    // Read By notification ID
     public NotificationEntity getNotificationById(String id) {
         return notificationRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Notification not found with id: " + id));
     }
     
-    // Read By User's School ID
     public List<NotificationEntity> getNotificationsByUserId(String schoolId) {
-        return notificationRepository.findBySchool_Id(schoolId);
+        return notificationRepository.findBySchoolId(schoolId);
     }
     
-    // Update
     public NotificationEntity updateNotification(String id, NotificationEntity notification) {
         NotificationEntity existing = getNotificationById(id);
         
@@ -70,17 +63,16 @@ public class NotificationService {
             existing.setMessage(notification.getMessage());
         }
         
-        if (notification.getSchool_Id() != null && !notification.getSchool_Id().isEmpty()) {
-            String schoolId = notification.getSchool_Id();
+        if (notification.getSchoolId() != null && !notification.getSchoolId().isEmpty()) {
+            String schoolId = notification.getSchoolId();
             userRepository.findById(schoolId)
                 .orElseThrow(() -> new RuntimeException("User not found with school_id: " + schoolId));
-            existing.setSchool_Id(schoolId);
+            existing.setSchoolId(schoolId);
         }
         
         return notificationRepository.save(existing);
     }
     
-    // Delete 
     public boolean deleteNotification(String id) {
         if (notificationRepository.existsById(id)) {
             notificationRepository.deleteById(id);
