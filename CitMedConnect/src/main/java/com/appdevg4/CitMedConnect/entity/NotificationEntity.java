@@ -1,7 +1,6 @@
 package com.appdevg4.CitMedConnect.entity;
 
 import java.time.LocalDateTime;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -23,9 +22,19 @@ public class NotificationEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
     
+    @Column(name = "Notification_Type", nullable = false)
+    private String notificationType;
+    
+    @Column(name = "is_global")
+    private Boolean isGlobal;
+    
+    @Column(name = "is_read", nullable = false)
+    private Boolean isRead = false;
+    
     @Column(name = "Created_At", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
-    
+
+    // Getters and Setters
     public String getNotificationId() {
         return notificationId;
     }
@@ -56,6 +65,30 @@ public class NotificationEntity {
     
     public void setMessage(String message) {
         this.message = message;
+    }
+    
+    public String getNotificationType() {
+        return notificationType;
+    }
+    
+    public void setNotificationType(String notificationType) {
+        this.notificationType = notificationType;
+    }
+    
+    public Boolean getIsGlobal() {
+        return isGlobal;
+    }
+    
+    public void setIsGlobal(Boolean isGlobal) {
+        this.isGlobal = isGlobal;
+    }
+    
+    public Boolean getIsRead() {
+        return isRead;
+    }
+    
+    public void setIsRead(Boolean isRead) {
+        this.isRead = isRead;
     }
     
     public LocalDateTime getCreatedAt() {
