@@ -3,6 +3,7 @@ package com.appdevg4.CitMedConnect.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,16 @@ public class UserService {
         return mapper.toDTO(updatedEntity);
     }
     
+    public UserDTO updateUserBySchoolId(String schoolId, UserDTO userDTO) {
+        UserEntity existingEntity = Optional.ofNullable(userRepository.findBySchoolId(schoolId))
+                .orElseThrow(() -> new RuntimeException("User not found with schoolId: " + schoolId));
+        
+        mapper.updateEntityFromDTO(userDTO, existingEntity);
+        UserEntity updatedEntity = userRepository.save(existingEntity);
+        
+        return mapper.toDTO(updatedEntity);
+    }
+    
     public ResponseEntity<Map<String, Boolean>> deleteUser(String id) {
         return userRepository.findById(id).map(user -> {
             userRepository.delete(user);
@@ -83,6 +94,19 @@ public class UserService {
     
     public UserDTO findByEmail(String email) {
         UserEntity entity = userRepository.findByEmail(email);
+        return mapper.toDTO(entity);
+    }
+    
+    public UserDTO authenticateUser(String email, String password) {
+        UserEntity entity = userRepository.findByEmail(email);
+        if (entity == null) {
+            throw new RuntimeException("User not found with email: " + email);
+        }
+        
+        if (!passwordEncoder.matches(password, entity.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+        
         return mapper.toDTO(entity);
     }
 }
