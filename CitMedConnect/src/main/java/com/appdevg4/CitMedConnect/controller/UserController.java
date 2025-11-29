@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.appdevg4.CitMedConnect.dto.UserDTO;
 import com.appdevg4.CitMedConnect.service.UserService;
+import com.appdevg4.CitMedConnect.dto.LoginRequest;
 
 @RestController
 @RequestMapping("/api/users")
@@ -63,6 +64,17 @@ public class UserController {
         }
     }
 
+    @PutMapping("/school-id/{schoolId}")
+    public ResponseEntity<?> updateUserBySchoolId(@PathVariable String schoolId, @RequestBody UserDTO userDTO) {
+        try {
+            UserDTO updatedUser = userService.updateUserBySchoolId(schoolId, userDTO);
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Boolean>> deleteUser(@PathVariable String id) {
         return userService.deleteUser(id);
@@ -81,5 +93,55 @@ public class UserController {
             return ResponseEntity.ok(user);
         }
         return ResponseEntity.notFound().build();
+    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        try {
+            UserDTO authenticatedUser = userService.authenticateUser(
+                loginRequest.getEmail(), 
+                loginRequest.getPassword()
+            );
+            return ResponseEntity.ok(authenticatedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    @PostMapping("/staff/login")
+    public ResponseEntity<?> staffLogin(@RequestBody LoginRequest loginRequest) {
+        try {
+            UserDTO authenticatedUser = userService.authenticateUser(
+                loginRequest.getEmail(), 
+                loginRequest.getPassword()
+            );
+            
+            // Check if user is staff
+            if (!"staff".equalsIgnoreCase(authenticatedUser.getRole())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "Staff access required"));
+            }
+            
+            // Add admin identifier to staff user
+            authenticatedUser.setRole("admin");
+            
+            // Set admin name format: ADMIN-{firstName}-{lastName}
+            String adminName = "ADMIN-" + authenticatedUser.getFirstName().toUpperCase() + "-" + authenticatedUser.getLastName().toUpperCase();
+            
+            return ResponseEntity.ok(Map.of(
+                "user", authenticatedUser,
+                "adminName", adminName,
+                "role", "admin",
+                "permissions", Map.of(
+                    "canCreateSlots", true,
+                    "canCreateRecords", true, 
+                    "canSendNotifications", true,
+                    "canManageUsers", true
+                )
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 }
