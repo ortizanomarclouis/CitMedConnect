@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -21,7 +22,7 @@ public class NotificationController {
     public ResponseEntity<NotificationEntity> createNotification(@RequestBody NotificationEntity notification) {
         try {
             NotificationEntity created = notificationService.createNotification(notification);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
@@ -37,7 +38,7 @@ public class NotificationController {
     public ResponseEntity<NotificationEntity> getNotificationById(@PathVariable String id) {
         try {
             NotificationEntity notification = notificationService.getNotificationById(id);
-        return ResponseEntity.ok(notification);
+            return ResponseEntity.ok(notification);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -49,13 +50,25 @@ public class NotificationController {
         return ResponseEntity.ok(notifications);
     }
 
+    @GetMapping("/user/{schoolId}/role/{userRole}")
+    public ResponseEntity<List<NotificationEntity>> getNotificationsForUser(
+            @PathVariable String schoolId, 
+            @PathVariable String userRole) {
+        try {
+            List<NotificationEntity> notifications = notificationService.getNotificationsForUser(schoolId, userRole);
+            return ResponseEntity.ok(notifications);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<NotificationEntity> updateNotification(
             @PathVariable String id,
             @RequestBody NotificationEntity notification) {
         try {
             NotificationEntity updated = notificationService.updateNotification(id, notification);
-        return ResponseEntity.ok(updated);
+            return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -65,8 +78,74 @@ public class NotificationController {
     public ResponseEntity<String> deleteNotification(@PathVariable String id) {
         boolean deleted = notificationService.deleteNotification(id);
         if (deleted) {
-        return ResponseEntity.ok("Notification deleted successfully");
+            return ResponseEntity.ok("Notification deleted successfully");
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notification not found");
+    }
+    
+    @PutMapping("/{id}/read")
+    public ResponseEntity<NotificationEntity> markNotificationAsRead(@PathVariable String id) {
+        try {
+            NotificationEntity notification = notificationService.markNotificationAsRead(id);
+            return ResponseEntity.ok(notification);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    @PostMapping("/broadcast/students")
+    public ResponseEntity<List<NotificationEntity>> sendNotificationToAllStudents(
+            @RequestBody Map<String, String> request) {
+        try {
+            String title = request.get("title");
+            String message = request.get("message");
+            String type = request.getOrDefault("type", "info");
+            
+            if (title == null || title.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (message == null || message.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            List<NotificationEntity> notifications = notificationService.sendNotificationToAllStudents(title, message, type);
+            return ResponseEntity.status(HttpStatus.CREATED).body(notifications);
+        } catch (RuntimeException e) {
+            System.err.println("Error in sendNotificationToAllStudents: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            System.err.println("Unexpected error in sendNotificationToAllStudents: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    @PostMapping("/broadcast/all")
+    public ResponseEntity<List<NotificationEntity>> sendNotificationToEveryone(
+            @RequestBody Map<String, String> request) {
+        try {
+            String title = request.get("title");
+            String message = request.get("message");
+            String type = request.getOrDefault("type", "info");
+            
+            if (title == null || title.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (message == null || message.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            List<NotificationEntity> notifications = notificationService.sendNotificationToEveryone(title, message, type);
+            return ResponseEntity.status(HttpStatus.CREATED).body(notifications);
+        } catch (RuntimeException e) {
+            System.err.println("Error in sendNotificationToEveryone: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            System.err.println("Unexpected error in sendNotificationToEveryone: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
