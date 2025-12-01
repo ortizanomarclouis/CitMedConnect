@@ -144,4 +144,76 @@ public class UserController {
                     .body(Map.of("error", e.getMessage()));
         }
     }
+    
+    @GetMapping("/profile/{email}")
+    public ResponseEntity<?> getUserProfile(@PathVariable String email) {
+        try {
+            UserDTO user = userService.getUserByEmail(email);
+            if (user != null) {
+                // Return profile data with all fields
+                return ResponseEntity.ok(Map.of(
+                    "firstName", user.getFirstName(),
+                    "lastName", user.getLastName(),
+                    "email", user.getEmail(),
+                    "age", user.getAge(),
+                    "phone", user.getPhone(),
+                    "gender", user.getGender(),
+                    "schoolId", user.getSchoolId(),
+                    "role", user.getRole(),
+                    "createdAt", user.getCreatedAt()
+                ));
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to retrieve profile: " + e.getMessage()));
+        }
+    }
+    
+    @PutMapping("/profile/{email}")
+    public ResponseEntity<?> updateUserProfile(@PathVariable String email, @RequestBody Map<String, Object> updates) {
+        try {
+            UserDTO existingUser = userService.getUserByEmail(email);
+            if (existingUser == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Create a new UserDTO with only updatable fields
+            UserDTO updateDTO = new UserDTO();
+            
+            // Only allow updating age, phone, and gender
+            if (updates.containsKey("age")) {
+                updateDTO.setAge((Integer) updates.get("age"));
+            }
+            if (updates.containsKey("phone")) {
+                updateDTO.setPhone((String) updates.get("phone"));
+            }
+            if (updates.containsKey("gender")) {
+                updateDTO.setGender((String) updates.get("gender"));
+            }
+            
+            // Update user by schoolId since that's the unique identifier
+            UserDTO updatedUser = userService.updateUserBySchoolId(existingUser.getSchoolId(), updateDTO);
+            
+            return ResponseEntity.ok(Map.of(
+                "message", "Profile updated successfully",
+                "user", Map.of(
+                    "firstName", updatedUser.getFirstName(),
+                    "lastName", updatedUser.getLastName(),
+                    "email", updatedUser.getEmail(),
+                    "age", updatedUser.getAge(),
+                    "phone", updatedUser.getPhone(),
+                    "gender", updatedUser.getGender(),
+                    "schoolId", updatedUser.getSchoolId(),
+                    "role", updatedUser.getRole()
+                )
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Failed to update profile: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An unexpected error occurred: " + e.getMessage()));
+        }
+    }
 }
