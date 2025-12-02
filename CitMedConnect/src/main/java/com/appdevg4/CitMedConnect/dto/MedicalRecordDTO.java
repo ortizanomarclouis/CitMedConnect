@@ -1,43 +1,45 @@
 package com.appdevg4.CitMedConnect.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MedicalRecordDTO {
     
     private Long recordId;
-    private String userId;
+    private String userId;  // This is schoolId
     private String userName;
     private Long appointmentId;
     private String diagnosis;
     private String symptoms;
     private String treatment;
     private String prescription;
-    private String vitalSigns;
+    private String vitalSigns;  // JSON string
     private String allergies;
     private String medicalHistory;
     private String notes;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime recordDate;
+    
     private String createdBy;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
     
-
+    // Constructors
     public MedicalRecordDTO() {}
     
-    public MedicalRecordDTO(Long recordId, String userId, String userName, String diagnosis, 
-                           String symptoms, String treatment, LocalDateTime recordDate) {
+    public MedicalRecordDTO(Long recordId, String userId, String userName, String diagnosis) {
         this.recordId = recordId;
         this.userId = userId;
         this.userName = userName;
         this.diagnosis = diagnosis;
-        this.symptoms = symptoms;
-        this.treatment = treatment;
-        this.recordDate = recordDate;
     }
     
-
+    // Getters and Setters
     public Long getRecordId() {
         return recordId;
     }
@@ -164,5 +166,27 @@ public class MedicalRecordDTO {
     
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    
+    @Override
+    public String toString() {
+        return "MedicalRecordDTO{" +
+                "recordId=" + recordId +
+                ", userId='" + userId + '\'' +
+                ", userName='" + userName + '\'' +
+                ", appointmentId=" + appointmentId +
+                ", diagnosis='" + diagnosis + '\'' +
+                ", symptoms='" + symptoms + '\'' +
+                ", treatment='" + treatment + '\'' +
+                ", prescription='" + prescription + '\'' +
+                ", vitalSigns='" + vitalSigns + '\'' +
+                ", allergies='" + allergies + '\'' +
+                ", medicalHistory='" + medicalHistory + '\'' +
+                ", notes='" + notes + '\'' +
+                ", recordDate=" + recordDate +
+                ", createdBy='" + createdBy + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }
