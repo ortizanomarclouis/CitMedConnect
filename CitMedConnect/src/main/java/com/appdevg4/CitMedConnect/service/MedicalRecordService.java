@@ -34,14 +34,27 @@ public class MedicalRecordService {
     private MedicalRecordMapper mapper;
     
     public MedicalRecordDTO createMedicalRecord(MedicalRecordDTO dto) {
-        MedicalRecordEntity entity = mapper.toEntity(dto);
-        
-        if (dto.getUserId() != null) {
-            UserEntity user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + dto.getUserId()));
-            entity.setUser(user);
+        // CRITICAL FIX: Validate userId first
+        if (dto.getUserId() == null || dto.getUserId().trim().isEmpty()) {
+            throw new RuntimeException("User ID is required");
         }
         
+        System.out.println("=== CREATE MEDICAL RECORD SERVICE ===");
+        System.out.println("DTO userId: " + dto.getUserId());
+        System.out.println("DTO diagnosis: " + dto.getDiagnosis());
+        System.out.println("DTO vitalSigns: " + dto.getVitalSigns());
+        
+        // Create entity from DTO
+        MedicalRecordEntity entity = mapper.toEntity(dto);
+        
+        // CRITICAL FIX: Find user by schoolId (userId in DTO is actually schoolId)
+        UserEntity user = userRepository.findById(dto.getUserId())
+            .orElseThrow(() -> new RuntimeException("User not found with school ID: " + dto.getUserId()));
+        
+        System.out.println("Found user: " + user.getSchoolId() + " - " + user.getFirstName() + " " + user.getLastName());
+        entity.setUser(user);
+        
+        // Handle appointment if provided
         if (dto.getAppointmentId() != null) {
             AppointmentEntity appointment = appointmentRepository.findById(dto.getAppointmentId())
                 .orElseThrow(() -> new RuntimeException("Appointment not found with ID: " + dto.getAppointmentId()));
@@ -53,13 +66,23 @@ public class MedicalRecordService {
             }
         }
         
+        // Set timestamps
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
         if (entity.getRecordDate() == null) {
             entity.setRecordDate(LocalDateTime.now());
         }
         
+        System.out.println("Entity before save:");
+        System.out.println("- User: " + (entity.getUser() != null ? entity.getUser().getSchoolId() : "null"));
+        System.out.println("- Diagnosis: " + entity.getDiagnosis());
+        System.out.println("- VitalSigns: " + entity.getVitalSigns());
+        
+        // Save to database
         MedicalRecordEntity savedEntity = medicalRecordRepository.save(entity);
+        
+        System.out.println("Entity saved successfully with ID: " + savedEntity.getRecordId());
+        
         return mapper.toDTO(savedEntity);
     }
     
@@ -115,7 +138,23 @@ public class MedicalRecordService {
         MedicalRecordEntity existingEntity = medicalRecordRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Medical record not found with ID: " + id));
         
+        // Update fields using mapper
         mapper.updateEntityFromDTO(dto, existingEntity);
+        
+        // Update user if userId changed
+        if (dto.getUserId() != null && !dto.getUserId().equals(existingEntity.getUser().getSchoolId())) {
+            UserEntity user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + dto.getUserId()));
+            existingEntity.setUser(user);
+        }
+        
+        // Update appointment if provided
+        if (dto.getAppointmentId() != null) {
+            AppointmentEntity appointment = appointmentRepository.findById(dto.getAppointmentId())
+                .orElseThrow(() -> new RuntimeException("Appointment not found with ID: " + dto.getAppointmentId()));
+            existingEntity.setAppointment(appointment);
+        }
+        
         existingEntity.setUpdatedAt(LocalDateTime.now());
         
         MedicalRecordEntity updatedEntity = medicalRecordRepository.save(existingEntity);
