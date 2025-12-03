@@ -18,6 +18,16 @@ public class TimeSlot {
     private boolean isAvailable;
     private int maxBookings;
     private int currentBookings;
+    
+    @Column(name = "staff_id")
+    private String staffId;
+    
+    @Column(name = "is_within_business_hours")
+    private boolean isWithinBusinessHours;
+    
+    @ManyToOne
+    @JoinColumn(name = "staff_id", insertable = false, updatable = false)
+    private UserEntity staff;
 
    
     public TimeSlot() {}
@@ -43,4 +53,23 @@ public class TimeSlot {
 
     public int getCurrentBookings() { return currentBookings; }
     public void setCurrentBookings(int currentBookings) { this.currentBookings = currentBookings; }
+    
+    public String getStaffId() { return staffId; }
+    public void setStaffId(String staffId) { this.staffId = staffId; }
+    
+    public boolean isWithinBusinessHours() {
+        return isWithinBusinessHours;
+    }
+    
+    public void setWithinBusinessHours(boolean withinBusinessHours) {
+        isWithinBusinessHours = withinBusinessHours;
+    }
+    
+    public UserEntity getStaff() {
+        return staff;
+    }
+    
+    public void setStaff(UserEntity staff) {
+        this.staff = staff;
+    }
 }
