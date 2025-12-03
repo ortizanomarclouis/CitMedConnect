@@ -33,6 +33,9 @@ public class MedicalRecordService {
     @Autowired
     private MedicalRecordMapper mapper;
     
+    @Autowired
+    private NotificationService notificationService;
+    
     public MedicalRecordDTO createMedicalRecord(MedicalRecordDTO dto) {
         // CRITICAL FIX: Validate userId first
         if (dto.getUserId() == null || dto.getUserId().trim().isEmpty()) {
@@ -82,6 +85,24 @@ public class MedicalRecordService {
         MedicalRecordEntity savedEntity = medicalRecordRepository.save(entity);
         
         System.out.println("Entity saved successfully with ID: " + savedEntity.getRecordId());
+        
+        // Send notification to the student
+        try {
+            String notificationTitle = "New Medical Record Created";
+            String notificationMessage = "A new medical record has been created for you. Please check your medical records for details.";
+            
+            notificationService.sendNotificationToUser(
+                user.getSchoolId(),
+                notificationTitle,
+                notificationMessage,
+                "medical_record"
+            );
+            
+            System.out.println("Notification sent to student: " + user.getSchoolId());
+        } catch (Exception e) {
+            System.err.println("Failed to send notification: " + e.getMessage());
+            // Don't fail the entire operation if notification fails
+        }
         
         return mapper.toDTO(savedEntity);
     }

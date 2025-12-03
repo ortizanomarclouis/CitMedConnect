@@ -28,6 +28,37 @@ public class NotificationController {
         }
     }
 
+    @PostMapping("/send")
+    public ResponseEntity<NotificationEntity> sendNotification(@RequestBody Map<String, String> request) {
+        try {
+            String recipientId = request.get("recipientId");
+            String title = request.get("title");
+            String message = request.get("message");
+            String type = request.getOrDefault("type", "info");
+            
+            if (recipientId == null || recipientId.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (title == null || title.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (message == null || message.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            NotificationEntity notification = notificationService.sendNotificationToUser(recipientId, title, message, type);
+            return ResponseEntity.status(HttpStatus.CREATED).body(notification);
+        } catch (RuntimeException e) {
+            System.err.println("Error in sendNotification: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            System.err.println("Unexpected error in sendNotification: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @GetMapping("/")
     public ResponseEntity<List<NotificationEntity>> getAllNotifications() {
         List<NotificationEntity> notifications = notificationService.getAllNotifications();
