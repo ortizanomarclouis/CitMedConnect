@@ -229,4 +229,24 @@ public class NotificationService {
             .sorted((n1, n2) -> n2.getCreatedAt().compareTo(n1.getCreatedAt()))
             .collect(Collectors.toList());
     }
+    
+    public NotificationEntity sendNotificationToUser(String recipientId, String title, String message, String type) {
+        // Verify the user exists
+        userRepository.findById(recipientId)
+            .orElseThrow(() -> new RuntimeException("User not found with school_id: " + recipientId));
+        
+        NotificationEntity notification = new NotificationEntity();
+        notification.setNotificationId(UUID.randomUUID().toString());
+        notification.setSchoolId(recipientId);
+        notification.setTitle(title);
+        notification.setMessage(message);
+        notification.setNotificationType(type);
+        notification.setIsGlobal(false);
+        notification.setCreatedAt(LocalDateTime.now());
+        
+        NotificationEntity saved = notificationRepository.save(notification);
+        System.out.println("Notification sent to user: " + recipientId + " with type: " + type);
+        
+        return saved;
+    }
 }
