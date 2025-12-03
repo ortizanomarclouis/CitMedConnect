@@ -4,6 +4,8 @@ import com.appdevg4.CitMedConnect.entity.AppointmentEntity;
 import com.appdevg4.CitMedConnect.service.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,14 +19,41 @@ public class AppointmentController {
     @Autowired
     private AppointmentService appointmentService;
     
+    @GetMapping("/test")
+    public String testEndpoint() {
+        return "Appointment controller is working!";
+    }
+    
     @PostMapping("/")
     public AppointmentEntity createAppointment(@RequestBody AppointmentEntity appointment) {
         return appointmentService.createAppointment(appointment);
     }
     
+    @GetMapping("/staff/all")
+    public List<AppointmentEntity> getAllAppointmentsForStaff() {
+        return appointmentService.getAllAppointments();
+    }
+    
+    @GetMapping("/student/my-appointments")
+    public List<AppointmentEntity> getMyAppointments() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName(); // This should be the school ID
+        return appointmentService.getAppointmentsByUserId(currentUserId);
+    }
+    
     @GetMapping("/")
     public List<AppointmentEntity> getAllAppointments() {
-        return appointmentService.getAllAppointments();
+        try {
+            return appointmentService.getAllAppointments();
+        } catch (Exception e) {
+            // Return empty list if service fails
+            return List.of();
+        }
+    }
+    
+    @GetMapping("/simple")
+    public List<String> getSimpleAppointments() {
+        return List.of("Test Appointment 1", "Test Appointment 2");
     }
     
     @GetMapping("/{id}")
@@ -70,5 +99,14 @@ public class AppointmentController {
     @PutMapping("/{id}/complete")
     public AppointmentEntity completeAppointment(@PathVariable Long id) {
         return appointmentService.completeAppointment(id);
+    }
+    
+    @PutMapping("/{id}/reschedule")
+    public AppointmentEntity rescheduleAppointment(@PathVariable Long id, @RequestBody Map<String, Long> requestBody) {
+        Long newTimeSlotId = requestBody.get("newTimeSlotId");
+        if (newTimeSlotId == null) {
+            throw new IllegalArgumentException("newTimeSlotId is required");
+        }
+        return appointmentService.rescheduleAppointment(id, newTimeSlotId);
     }
 }
