@@ -18,9 +18,6 @@ public class MedicalRecordMapper {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    /**
-     * Convert Entity to DTO
-     */
     public MedicalRecordDTO toDTO(MedicalRecordEntity entity) {
         if (entity == null) {
             return null;
@@ -29,18 +26,15 @@ public class MedicalRecordMapper {
         MedicalRecordDTO dto = new MedicalRecordDTO();
         dto.setRecordId(entity.getRecordId());
         
-        // Map user information
         if (entity.getUser() != null) {
             dto.setUserId(entity.getUser().getSchoolId());
             dto.setUserName(entity.getUser().getFirstName() + " " + entity.getUser().getLastName());
         }
         
-        // Map appointment information
         if (entity.getAppointment() != null) {
             dto.setAppointmentId(entity.getAppointment().getAppointmentId());
         }
-        
-        // Map all other fields
+    
         dto.setDiagnosis(entity.getDiagnosis());
         dto.setSymptoms(entity.getSymptoms());
         dto.setTreatment(entity.getTreatment());
@@ -57,10 +51,6 @@ public class MedicalRecordMapper {
         return dto;
     }
     
-    /**
-     * Convert DTO to Entity (with User and Appointment lookup)
-     * This is the key method that was missing proper user/appointment handling
-     */
     public MedicalRecordEntity toEntity(MedicalRecordDTO dto) {
         if (dto == null) {
             return null;
@@ -68,7 +58,6 @@ public class MedicalRecordMapper {
         
         MedicalRecordEntity entity = new MedicalRecordEntity();
         
-        // CRITICAL FIX: Fetch and set the User entity from the database
         if (dto.getUserId() != null && !dto.getUserId().trim().isEmpty()) {
             UserEntity user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found with school ID: " + dto.getUserId()));
@@ -77,14 +66,12 @@ public class MedicalRecordMapper {
             throw new RuntimeException("User ID (schoolId) is required to create a medical record");
         }
         
-        // Fetch and set the Appointment entity if provided
         if (dto.getAppointmentId() != null) {
             AppointmentEntity appointment = appointmentRepository.findById(dto.getAppointmentId())
                 .orElseThrow(() -> new RuntimeException("Appointment not found with ID: " + dto.getAppointmentId()));
             entity.setAppointment(appointment);
         }
         
-        // Map all other fields
         entity.setDiagnosis(dto.getDiagnosis());
         entity.setSymptoms(dto.getSymptoms());
         entity.setTreatment(dto.getTreatment());
@@ -99,30 +86,23 @@ public class MedicalRecordMapper {
         return entity;
     }
     
-    /**
-     * Update existing entity from DTO
-     * Used for PATCH/PUT operations
-     */
     public void updateEntityFromDTO(MedicalRecordDTO dto, MedicalRecordEntity entity) {
         if (dto == null || entity == null) {
             return;
         }
         
-        // Update user if provided (though typically not changed after creation)
         if (dto.getUserId() != null && !dto.getUserId().trim().isEmpty()) {
             UserEntity user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found with school ID: " + dto.getUserId()));
             entity.setUser(user);
         }
         
-        // Update appointment if provided
         if (dto.getAppointmentId() != null) {
             AppointmentEntity appointment = appointmentRepository.findById(dto.getAppointmentId())
                 .orElseThrow(() -> new RuntimeException("Appointment not found with ID: " + dto.getAppointmentId()));
             entity.setAppointment(appointment);
         }
         
-        // Update all other fields if provided
         if (dto.getDiagnosis() != null) {
             entity.setDiagnosis(dto.getDiagnosis());
         }

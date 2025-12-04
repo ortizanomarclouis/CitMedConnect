@@ -51,12 +51,10 @@ public class TimeSlotService {
         return false;
     }
     
-    // Find available time slots for a specific date
     public List<TimeSlot> findAvailableSlots(LocalDate date) {
         return timeSlotRepository.findBySlotDateAndIsAvailable(date, true);
     }
     
-    // Get time slots for a specific staff member
     public List<TimeSlot> getStaffSlots(String staffId) {
         return timeSlotRepository.findByStaffId(staffId);
     }

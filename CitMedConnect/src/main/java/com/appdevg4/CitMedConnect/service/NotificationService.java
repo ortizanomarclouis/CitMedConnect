@@ -107,26 +107,22 @@ public class NotificationService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getName() != null) {
             String username = authentication.getName();
-            // Try to find user by email first
-            try {
-                UserEntity user = userRepository.findByEmail(username);
-                if (user != null) {
-                    return user.getSchoolId();
-                }
-                // If not found by email, try by schoolId directly
-                user = userRepository.findBySchoolId(username);
-                if (user != null) {
-                    return user.getSchoolId();
-                }
-                // Finally, try by ID (schoolId as primary key)
-                user = userRepository.findById(username).orElse(null);
-                if (user != null) {
-                    return user.getSchoolId();
-                }
-            } catch (Exception e) {
-                // Log error but continue
-                System.err.println("Error finding current user: " + e.getMessage());
+        try {
+            UserEntity user = userRepository.findByEmail(username);
+            if (user != null) {
+                return user.getSchoolId();
             }
+            user = userRepository.findBySchoolId(username);
+            if (user != null) {
+                return user.getSchoolId();
+            }
+            user = userRepository.findById(username).orElse(null);
+            if (user != null) {
+                return user.getSchoolId();
+            }
+        } catch (Exception e) {
+            System.err.println("Error finding current user: " + e.getMessage());
+        }
         }
         return null;
     }
@@ -152,14 +148,13 @@ public class NotificationService {
         System.out.println("DEBUG: Notification type: " + type);
         
         for (UserEntity student : students) {
-            // DON'T send to yourself!
             if (currentUserSchoolId == null || !student.getSchoolId().equals(currentUserSchoolId)) {
                 NotificationEntity notification = new NotificationEntity();
                 notification.setNotificationId(UUID.randomUUID().toString());
                 notification.setSchoolId(student.getSchoolId());
                 notification.setTitle(title);
                 notification.setMessage(message);
-                notification.setNotificationType(type); // <-- THIS IS THE KEY LINE!
+                notification.setNotificationType(type);
                 notification.setIsGlobal(false);
                 notification.setCreatedAt(LocalDateTime.now());
                 
@@ -189,14 +184,13 @@ public class NotificationService {
         System.out.println("DEBUG: Notification type: " + type);
         
         for (UserEntity user : allUsers) {
-            // DON'T send to yourself!
             if (currentUserSchoolId == null || !user.getSchoolId().equals(currentUserSchoolId)) {
                 NotificationEntity notification = new NotificationEntity();
                 notification.setNotificationId(UUID.randomUUID().toString());
                 notification.setSchoolId(user.getSchoolId());
                 notification.setTitle(title);
                 notification.setMessage(message);
-                notification.setNotificationType(type); // <-- THIS IS THE KEY LINE!
+                notification.setNotificationType(type);
                 notification.setIsGlobal(true);
                 notification.setCreatedAt(LocalDateTime.now());
                 
@@ -231,7 +225,6 @@ public class NotificationService {
     }
     
     public NotificationEntity sendNotificationToUser(String recipientId, String title, String message, String type) {
-        // Verify the user exists
         userRepository.findById(recipientId)
             .orElseThrow(() -> new RuntimeException("User not found with school_id: " + recipientId));
         

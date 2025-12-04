@@ -156,27 +156,21 @@ public class AppointmentService {
         }).orElse(null);
     }
     
-    // Book an appointment for a specific time slot
     public AppointmentEntity bookAppointment(Long timeSlotId, String studentId, String reason, String notes) {
-        // Find the time slot
         TimeSlot timeSlot = timeSlotRepository.findById(timeSlotId)
             .orElseThrow(() -> new IllegalArgumentException("Time slot not found"));
         
-        // Check if time slot is available
         if (!timeSlot.isAvailable()) {
             throw new IllegalStateException("Time slot is not available");
         }
         
-        // Check if time slot has reached max bookings
         if (timeSlot.getCurrentBookings() >= timeSlot.getMaxBookings()) {
             throw new IllegalStateException("Time slot is fully booked");
         }
         
-        // Find the user
         UserEntity user = userRepository.findById(studentId)
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
         
-        // Create the appointment
         AppointmentEntity appointment = new AppointmentEntity();
         appointment.setUser(user);
         appointment.setTimeSlot(timeSlot);
@@ -186,7 +180,6 @@ public class AppointmentService {
         appointment.setCreatedAt(LocalDateTime.now());
         appointment.setUpdatedAt(LocalDateTime.now());
         
-        // Update time slot booking count
         timeSlot.setCurrentBookings(timeSlot.getCurrentBookings() + 1);
         if (timeSlot.getCurrentBookings() >= timeSlot.getMaxBookings()) {
             timeSlot.setAvailable(false);
@@ -196,7 +189,6 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
     
-    // Reschedule an appointment to a new time slot
     public AppointmentEntity rescheduleAppointment(Long appointmentId, Long newTimeSlotId) {
         AppointmentEntity appointment = appointmentRepository.findById(appointmentId)
             .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
@@ -204,31 +196,26 @@ public class AppointmentService {
         TimeSlot newTimeSlot = timeSlotRepository.findById(newTimeSlotId)
             .orElseThrow(() -> new IllegalArgumentException("New time slot not found"));
         
-        // Check if new time slot is available
         if (!newTimeSlot.isAvailable()) {
             throw new IllegalStateException("New time slot is not available");
         }
         
-        // Check if new time slot has reached max bookings
         if (newTimeSlot.getCurrentBookings() >= newTimeSlot.getMaxBookings()) {
             throw new IllegalStateException("New time slot is fully booked");
         }
         
         TimeSlot oldTimeSlot = appointment.getTimeSlot();
         
-        // Update old time slot (decrease booking count)
         if (oldTimeSlot != null) {
             oldTimeSlot.setCurrentBookings(Math.max(0, oldTimeSlot.getCurrentBookings() - 1));
             oldTimeSlot.setAvailable(true);
             timeSlotRepository.save(oldTimeSlot);
         }
         
-        // Update appointment with new time slot
         appointment.setTimeSlot(newTimeSlot);
         appointment.setStatus("RESCHEDULED");
         appointment.setUpdatedAt(LocalDateTime.now());
         
-        // Update new time slot (increase booking count)
         newTimeSlot.setCurrentBookings(newTimeSlot.getCurrentBookings() + 1);
         if (newTimeSlot.getCurrentBookings() >= newTimeSlot.getMaxBookings()) {
             newTimeSlot.setAvailable(false);
