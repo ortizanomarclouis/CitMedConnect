@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.appdevg4.CitMedConnect.entity.UserEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.appdevg4.CitMedConnect.dto.UserDTO;
 import com.appdevg4.CitMedConnect.service.UserService;
-import com.appdevg4.CitMedConnect.dto.LoginRequest;
 
 @RestController
 @RequestMapping("/api/users")
@@ -95,7 +96,7 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody UserEntity loginRequest) {
         try {
             UserDTO authenticatedUser = userService.authenticateUser(
                 loginRequest.getEmail(), 
@@ -109,7 +110,7 @@ public class UserController {
     }
     
     @PostMapping("/staff/login")
-    public ResponseEntity<?> staffLogin(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> staffLogin(@RequestBody UserEntity loginRequest) {
         try {
             UserDTO authenticatedUser = userService.authenticateUser(
                 loginRequest.getEmail(), 
