@@ -116,16 +116,13 @@ public class UserController {
                 loginRequest.getPassword()
             );
             
-            // Check if user is staff
             if (!"staff".equalsIgnoreCase(authenticatedUser.getRole())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(Map.of("error", "Staff access required"));
             }
             
-            // Add admin identifier to staff user
             authenticatedUser.setRole("admin");
             
-            // Set admin name format: ADMIN-{firstName}-{lastName}
             String adminName = "ADMIN-" + authenticatedUser.getFirstName().toUpperCase() + "-" + authenticatedUser.getLastName().toUpperCase();
             
             return ResponseEntity.ok(Map.of(
@@ -150,7 +147,6 @@ public class UserController {
         try {
             UserDTO user = userService.getUserByEmail(email);
             if (user != null) {
-                // Return profile data with all fields
                 return ResponseEntity.ok(Map.of(
                     "firstName", user.getFirstName(),
                     "lastName", user.getLastName(),
@@ -178,10 +174,8 @@ public class UserController {
                 return ResponseEntity.notFound().build();
             }
             
-            // Create a new UserDTO with only updatable fields
             UserDTO updateDTO = new UserDTO();
             
-            // Only allow updating age, phone, and gender
             if (updates.containsKey("age")) {
                 updateDTO.setAge((Integer) updates.get("age"));
             }
@@ -192,7 +186,6 @@ public class UserController {
                 updateDTO.setGender((String) updates.get("gender"));
             }
             
-            // Update user by schoolId since that's the unique identifier
             UserDTO updatedUser = userService.updateUserBySchoolId(existingUser.getSchoolId(), updateDTO);
             
             return ResponseEntity.ok(Map.of(

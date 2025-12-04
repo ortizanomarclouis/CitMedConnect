@@ -37,7 +37,7 @@ public class AppointmentController {
     @GetMapping("/student/my-appointments")
     public List<AppointmentEntity> getMyAppointments() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserId = authentication.getName(); // This should be the school ID
+        String currentUserId = authentication.getName();
         return appointmentService.getAppointmentsByUserId(currentUserId);
     }
     
@@ -46,7 +46,6 @@ public class AppointmentController {
         try {
             return appointmentService.getAllAppointments();
         } catch (Exception e) {
-            // Return empty list if service fails
             return List.of();
         }
     }

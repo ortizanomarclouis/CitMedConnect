@@ -30,11 +30,11 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/appointments/staff/**").permitAll() // Temporarily allow for testing
-                .requestMatchers("/api/appointments/student/**").permitAll() // Temporarily allow for testing
+                .requestMatchers("/api/appointments/staff/**").permitAll()
+                .requestMatchers("/api/appointments/student/**").permitAll()
                 .requestMatchers("/api/appointments/test").permitAll()
                 .requestMatchers("/api/appointments/simple").permitAll()
-                .requestMatchers("/api/appointments/").permitAll() // Temporarily allow for testing
+                .requestMatchers("/api/appointments/").permitAll()
                 .anyRequest().permitAll()
             );
         return http.build();
