@@ -27,6 +27,9 @@ public class AppointmentService {
     @Autowired
     private TimeSlotRepository timeSlotRepository;
     
+    @Autowired
+    private NotificationService notificationService;
+    
     public AppointmentEntity createAppointment(AppointmentEntity appointment) {
         if (appointment.getUser() != null) {
             UserEntity user = userRepository.findById(appointment.getUser().getSchoolId()).orElse(null);
@@ -55,7 +58,30 @@ public class AppointmentService {
         
         appointment.setCreatedAt(LocalDateTime.now());
         appointment.setUpdatedAt(LocalDateTime.now());
-        return appointmentRepository.save(appointment);
+        AppointmentEntity savedAppointment = appointmentRepository.save(appointment);
+        
+        // Send notification to all staff/admin about new appointment
+        try {
+            String studentName = appointment.getUser() != null 
+                ? appointment.getUser().getFirstName() + " " + appointment.getUser().getLastName()
+                : "A student";
+            String notificationTitle = "New Appointment Booked";
+            String notificationMessage = studentName + " has booked a new appointment. Reason: " 
+                + (appointment.getReason() != null ? appointment.getReason() : "Not specified");
+            
+            notificationService.sendNotificationToAllStaff(
+                notificationTitle,
+                notificationMessage,
+                "appointment"
+            );
+            
+            System.out.println("Notification sent to all staff/admin about new appointment");
+        } catch (Exception e) {
+            System.err.println("Failed to send notification to staff: " + e.getMessage());
+            // Don't fail the entire operation if notification fails
+        }
+        
+        return savedAppointment;
     }
     
     public List<AppointmentEntity> getAllAppointments() {

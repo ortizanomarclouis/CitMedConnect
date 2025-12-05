@@ -152,6 +152,34 @@ public class NotificationController {
         }
     }
     
+    @PostMapping("/broadcast/staff")
+    public ResponseEntity<List<NotificationEntity>> sendNotificationToAllStaff(
+            @RequestBody Map<String, String> request) {
+        try {
+            String title = request.get("title");
+            String message = request.get("message");
+            String type = request.getOrDefault("type", "info");
+            
+            if (title == null || title.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            if (message == null || message.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            List<NotificationEntity> notifications = notificationService.sendNotificationToAllStaff(title, message, type);
+            return ResponseEntity.status(HttpStatus.CREATED).body(notifications);
+        } catch (RuntimeException e) {
+            System.err.println("Error in sendNotificationToAllStaff: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            System.err.println("Unexpected error in sendNotificationToAllStaff: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
     @PostMapping("/broadcast/all")
     public ResponseEntity<List<NotificationEntity>> sendNotificationToEveryone(
             @RequestBody Map<String, String> request) {

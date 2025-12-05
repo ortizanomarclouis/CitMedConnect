@@ -242,4 +242,50 @@ public class NotificationService {
         
         return saved;
     }
+    
+    public List<NotificationEntity> sendNotificationToAllStaff(String title, String message, String type) {
+        List<UserEntity> staffUsers = userRepository.findByRole("STAFF");
+        List<UserEntity> adminUsers = userRepository.findByRole("ADMIN");
+        
+        List<UserEntity> allStaff = new ArrayList<>();
+        if (staffUsers != null) {
+            allStaff.addAll(staffUsers);
+        }
+        if (adminUsers != null) {
+            allStaff.addAll(adminUsers);
+        }
+        
+        if (allStaff.isEmpty()) {
+            throw new RuntimeException("No staff or admin users found in the system. Cannot send broadcast notification.");
+        }
+        
+        List<NotificationEntity> notifications = new ArrayList<>();
+        String currentUserSchoolId = getCurrentUserSchoolId();
+        
+        System.out.println("DEBUG: Current user schoolId: " + currentUserSchoolId);
+        System.out.println("DEBUG: Total staff/admin found: " + allStaff.size());
+        System.out.println("DEBUG: Notification type: " + type);
+        
+        for (UserEntity staff : allStaff) {
+            // DON'T send to yourself!
+            if (currentUserSchoolId == null || !staff.getSchoolId().equals(currentUserSchoolId)) {
+                NotificationEntity notification = new NotificationEntity();
+                notification.setNotificationId(UUID.randomUUID().toString());
+                notification.setSchoolId(staff.getSchoolId());
+                notification.setTitle(title);
+                notification.setMessage(message);
+                notification.setNotificationType(type);
+                notification.setIsGlobal(false);
+                notification.setCreatedAt(LocalDateTime.now());
+                
+                notifications.add(notificationRepository.save(notification));
+                System.out.println("DEBUG: Sent notification to: " + staff.getSchoolId() + " with type: " + type);
+            } else {
+                System.out.println("DEBUG: SKIPPED notification to: " + staff.getSchoolId() + " (current user)");
+            }
+        }
+        
+        System.out.println("DEBUG: Total notifications sent: " + notifications.size());
+        return notifications;
+    }
 }
