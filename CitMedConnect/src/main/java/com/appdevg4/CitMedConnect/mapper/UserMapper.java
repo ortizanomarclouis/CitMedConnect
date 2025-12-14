@@ -1,8 +1,9 @@
 package com.appdevg4.CitMedConnect.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.appdevg4.CitMedConnect.dto.UserDTO;
 import com.appdevg4.CitMedConnect.entity.UserEntity;
-import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
@@ -63,9 +64,11 @@ public class UserMapper {
         if (dto.getPhone() != null) {
             entity.setPhone(dto.getPhone());
         }
-        if (dto.getRole() != null) {
-            entity.setRole(dto.getRole());
-        }
+        // SECURITY FIX: Removed role update from general update method
+        // Role should only be changed through dedicated admin endpoints
+        // if (dto.getRole() != null) {
+        //     entity.setRole(dto.getRole());
+        // }
         if (dto.getGender() != null) {
             entity.setGender(dto.getGender());
         }

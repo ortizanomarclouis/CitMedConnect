@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.appdevg4.CitMedConnect.entity.UserEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.appdevg4.CitMedConnect.dto.UserDTO;
+import com.appdevg4.CitMedConnect.entity.UserEntity;
 import com.appdevg4.CitMedConnect.service.UserService;
 
 @RestController
@@ -95,6 +94,7 @@ public class UserController {
         }
         return ResponseEntity.notFound().build();
     }
+    
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserEntity loginRequest) {
         try {
@@ -117,19 +117,23 @@ public class UserController {
                 loginRequest.getPassword()
             );
             
+            // CRITICAL: Verify the ACTUAL database role, not any modified value
             if (!"staff".equalsIgnoreCase(authenticatedUser.getRole())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(Map.of("error", "Staff access required"));
+                        .body(Map.of(
+                            "error", "Access denied. Staff credentials required.",
+                            "actualRole", authenticatedUser.getRole()
+                        ));
             }
             
-            authenticatedUser.setRole("admin");
-            
-            String adminName = "ADMIN-" + authenticatedUser.getFirstName().toUpperCase() + "-" + authenticatedUser.getLastName().toUpperCase();
+            // Return the ORIGINAL data without modification
+            // Frontend should NOT store or trust any "admin" role claims
+            String adminName = "ADMIN-" + authenticatedUser.getFirstName().toUpperCase() 
+                             + "-" + authenticatedUser.getLastName().toUpperCase();
             
             return ResponseEntity.ok(Map.of(
-                "user", authenticatedUser,
+                "user", authenticatedUser,  // Contains ACTUAL role from DB
                 "adminName", adminName,
-                "role", "admin",
                 "permissions", Map.of(
                     "canCreateSlots", true,
                     "canCreateRecords", true, 
@@ -175,6 +179,12 @@ public class UserController {
                 return ResponseEntity.notFound().build();
             }
             
+            // CRITICAL: Block any attempt to modify role through profile update
+            if (updates.containsKey("role")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "Unauthorized: Role modification not allowed"));
+            }
+            
             UserDTO updateDTO = new UserDTO();
             
             if (updates.containsKey("age")) {
@@ -208,6 +218,25 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "An unexpected error occurred: " + e.getMessage()));
+        }
+    }
+    
+    // NEW: Endpoint to verify user role from database
+    @GetMapping("/verify-role/{email}")
+    public ResponseEntity<?> verifyUserRole(@PathVariable String email) {
+        try {
+            UserDTO user = userService.getUserByEmail(email);
+            if (user != null) {
+                return ResponseEntity.ok(Map.of(
+                    "email", user.getEmail(),
+                    "role", user.getRole(),
+                    "schoolId", user.getSchoolId()
+                ));
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
         }
     }
 }
