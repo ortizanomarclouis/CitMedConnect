@@ -1,5 +1,7 @@
 package com.appdevg4.CitMedConnect.config;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -11,8 +13,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -30,8 +30,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/appointments/staff/**").permitAll()
-                .requestMatchers("/api/appointments/student/**").permitAll()
+                .requestMatchers("/api/appointments/staff/**").hasRole("Staff")
+                .requestMatchers("/api/appointments/student/**").hasRole("Student")
                 .requestMatchers("/api/appointments/test").permitAll()
                 .requestMatchers("/api/appointments/simple").permitAll()
                 .requestMatchers("/api/appointments/").permitAll()

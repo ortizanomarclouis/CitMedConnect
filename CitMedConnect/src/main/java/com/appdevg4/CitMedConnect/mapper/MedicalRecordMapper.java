@@ -1,13 +1,14 @@
 package com.appdevg4.CitMedConnect.mapper;
 
-import com.appdevg4.CitMedConnect.dto.MedicalRecordDTO;
-import com.appdevg4.CitMedConnect.entity.MedicalRecordEntity;
-import com.appdevg4.CitMedConnect.entity.UserEntity;
-import com.appdevg4.CitMedConnect.entity.AppointmentEntity;
-import com.appdevg4.CitMedConnect.repository.UserRepository;
-import com.appdevg4.CitMedConnect.repository.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.appdevg4.CitMedConnect.dto.MedicalRecordDTO;
+import com.appdevg4.CitMedConnect.entity.AppointmentEntity;
+import com.appdevg4.CitMedConnect.entity.MedicalRecordEntity;
+import com.appdevg4.CitMedConnect.entity.UserEntity;
+import com.appdevg4.CitMedConnect.repository.AppointmentRepository;
+import com.appdevg4.CitMedConnect.repository.UserRepository;
 
 @Component
 public class MedicalRecordMapper {
